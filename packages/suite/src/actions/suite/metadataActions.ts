@@ -21,7 +21,10 @@ import FileSystemProvider from '@suite-services/metadata/FileSystemProvider';
 export type MetadataAction =
     | { type: typeof METADATA.ENABLE }
     | { type: typeof METADATA.DISABLE }
-    | { type: typeof METADATA.SET_EDITING; payload: string | undefined }
+    | {
+          type: typeof METADATA.SET_EDITING;
+          payload: { editing: string | undefined; isEditActive: boolean };
+      }
     | { type: typeof METADATA.SET_INITIATING; payload: boolean }
     | {
           type: typeof METADATA.SET_DEVICE_METADATA;
@@ -698,7 +701,10 @@ export const init =
         return true;
     };
 
-export const setEditing = (payload: string | undefined): MetadataAction => ({
+export const setEditing = (payload: {
+    editing: string | undefined;
+    isEditActive: boolean;
+}): MetadataAction => ({
     type: METADATA.SET_EDITING,
     payload,
 });

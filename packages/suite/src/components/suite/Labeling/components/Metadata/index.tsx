@@ -251,7 +251,7 @@ const MetadataLabeling = (props: Props) => {
             // provide force=true argument (user wants to enable metadata)
             init(true);
         }
-        setEditing(props.payload.defaultValue);
+        setEditing({ editing: props.payload.defaultValue, isEditActive: true });
     };
 
     let dropdownItems: DropdownMenuItem[] = [
@@ -286,6 +286,7 @@ const MetadataLabeling = (props: Props) => {
                 setShowSuccess(false);
             }, 2000);
         }
+        setEditing({ editing: value || undefined, isEditActive: false });
     };
 
     const ButtonLikeLabelWithDropdown = useMemo(() => {
@@ -328,7 +329,7 @@ const MetadataLabeling = (props: Props) => {
                     <ButtonLikeLabelWithDropdown
                         editActive={editActive}
                         onSubmit={onSubmit}
-                        onBlur={() => setEditing(undefined)}
+                        onBlur={() => setEditing({ editing: undefined, isEditActive: false })}
                         data-test={dataTestBase}
                         {...props}
                         dropdownOptions={dropdownItems}
@@ -359,7 +360,7 @@ const MetadataLabeling = (props: Props) => {
                     <TextLikeLabel
                         editActive={editActive}
                         onSubmit={onSubmit}
-                        onBlur={() => setEditing(undefined)}
+                        onBlur={() => setEditing({ editing: undefined, isEditActive: false })}
                         data-test={dataTestBase}
                         {...props}
                     />

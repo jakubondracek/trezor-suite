@@ -7,6 +7,7 @@ export const initialState: MetadataState = {
     // is Suite trying to load metadata (get master key -> sync cloud)?
     enabled: false,
     initiating: false,
+    isEditActive: false,
 };
 
 const metadataReducer = (state = initialState, action: Action): MetadataState =>
@@ -24,7 +25,8 @@ const metadataReducer = (state = initialState, action: Action): MetadataState =>
                 draft.provider = action.payload;
                 break;
             case METADATA.SET_EDITING:
-                draft.editing = action.payload;
+                draft.editing = action.payload?.editing;
+                draft.isEditActive = action.payload?.isEditActive;
                 break;
             case METADATA.SET_INITIATING:
                 draft.initiating = action.payload;

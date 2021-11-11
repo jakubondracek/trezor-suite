@@ -89,10 +89,11 @@ const WalletInstance = ({
         forgetDevice: suiteActions.forgetDevice,
         getDiscovery: discoveryActions.getDiscovery,
     });
-    const { accounts, fiat, localCurrency } = useSelector(state => ({
+    const { accounts, fiat, localCurrency, isEditActive } = useSelector(state => ({
         accounts: state.wallet.accounts,
         fiat: state.wallet.fiat,
         localCurrency: state.wallet.settings.localCurrency,
+        isEditActive: state.metadata.isEditActive,
     }));
 
     const theme = useTheme();
@@ -117,7 +118,7 @@ const WalletInstance = ({
             state={isSelected ? 'success' : undefined}
             {...rest}
         >
-            <Col grow={1} onClick={() => selectDeviceInstance(instance)}>
+            <Col grow={1} onClick={() => !isEditActive && selectDeviceInstance(instance)}>
                 {discoveryProcess && (
                     <InstanceType>
                         {!instance.useEmptyPassphrase && (

@@ -28,7 +28,9 @@ const metadata =
             case ROUTER.LOCATION_CHANGE:
                 // if there is editing field active, changing route turns it inactive
                 if (api.getState().metadata.editing) {
-                    api.dispatch(metadataActions.setEditing(undefined));
+                    api.dispatch(
+                        metadataActions.setEditing({ editing: undefined, isEditActive: false }),
+                    );
                 }
                 break;
             default:
