@@ -17,7 +17,7 @@ export const Wrapper = styled.div<ResponsiveSize>`
     }
 `;
 
-export const FullWidthForm = styled.div`
+export const FullWidthForm = styled.form`
     width: 100%;
 `;
 

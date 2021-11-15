@@ -19,7 +19,7 @@ const CoinmarketExchangeForm = () => {
                 </NoProviders>
             )}
             {!isLoading && !noProviders && (
-                <FullWidthForm onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
+                <FullWidthForm onSubmit={handleSubmit(onSubmit)}>
                     <Inputs />
                     <FeesWrapper>
                         <Fees />
