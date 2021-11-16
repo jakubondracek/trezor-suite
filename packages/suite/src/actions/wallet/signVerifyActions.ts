@@ -74,7 +74,7 @@ const showAddressByNetwork =
     };
 
 const signByNetwork =
-    (path: string | number[], message: string, hex: boolean) =>
+    (path: string | number[], message: string, hex: boolean, aopp: boolean) =>
     ({ account, device, coin, useEmptyPassphrase }: StateParams) => {
         const params = {
             device,
@@ -83,6 +83,7 @@ const signByNetwork =
             message,
             useEmptyPassphrase,
             hex,
+            no_script_type: aopp,
         };
         switch (account.networkType) {
             case 'bitcoin':
@@ -167,10 +168,10 @@ export const showAddress =
             .catch(onError(dispatch, 'verify-address-error'));
 
 export const sign =
-    (path: string | number[], message: string, hex = false) =>
+    (path: string | number[], message: string, hex = false, aopp = false) =>
     (dispatch: Dispatch, getState: GetState) =>
         getStateParams(getState)
-            .then(signByNetwork(path, message, hex))
+            .then(signByNetwork(path, message, hex, aopp))
             .then(throwWhenFailed)
             .then(onSignSuccess(dispatch))
             .catch(onError(dispatch, 'sign-message-error'));
