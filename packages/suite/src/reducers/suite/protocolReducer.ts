@@ -1,12 +1,13 @@
 import produce from 'immer';
 import { PROTOCOL } from '@suite-actions/constants';
-import { Action } from '@suite-types';
+import { PROTOCOL_SCHEME } from '@suite-support/Protocol';
+import type { Action } from '@suite-types';
 
 export interface State {
     sendForm: {
         address?: string;
         amount?: number;
-        scheme?: 'bitcoin';
+        scheme?: PROTOCOL_SCHEME;
         shouldFillSendForm?: boolean;
     };
 }

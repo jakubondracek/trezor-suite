@@ -11,6 +11,7 @@ import type { CoinType } from '@trezor/components';
 
 export enum PROTOCOL_SCHEME {
     BITCOIN = 'bitcoin',
+    AOPP = 'aopp',
 }
 
 export const PROTOCOL_TO_SYMBOL: { [key: string]: CoinType } = {
