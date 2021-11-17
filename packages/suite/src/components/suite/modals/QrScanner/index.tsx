@@ -92,17 +92,19 @@ const QrScanner = ({ onCancel, decision }: Props) => {
         }
     };
 
-    const handleScan = (data: string | null) => {
-        if (data) {
+    const handleScan = (uri: string | null) => {
+        if (uri) {
             try {
-                const parsedUri = parseQuery(data);
-                if (parsedUri) {
+                const query = parseQuery(uri);
+                if (query) {
                     decision.resolve({
-                        address: parsedUri.address || '',
-                        amount: parsedUri.amount,
+                        uri,
+                        ...query,
                     });
                     setReaderLoaded(true);
                     onCancel();
+                } else {
+                    handleError({ name: 'unknown' });
                 }
             } catch (error) {
                 handleError(error);

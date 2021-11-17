@@ -14,6 +14,8 @@ export type SignVerifyFields = {
     path: string;
     signature: string;
     hex: boolean;
+    aopp: boolean;
+    callback: string;
 };
 
 const DEFAULT_VALUES: SignVerifyFields = {
@@ -22,6 +24,8 @@ const DEFAULT_VALUES: SignVerifyFields = {
     path: '',
     signature: '',
     hex: false,
+    aopp: false,
+    callback: '',
 };
 
 export const useSignVerifyForm = (page: 'sign' | 'verify', account?: Account) => {
@@ -70,6 +74,9 @@ export const useSignVerifyForm = (page: 'sign' | 'verify', account?: Account) =>
         name: 'hex',
     });
 
+    register('aopp');
+    register('callback');
+
     const messageRef = register({
         maxLength: MAX_LENGTH_MESSAGE,
         validate: (message: string) =>
@@ -117,6 +124,11 @@ export const useSignVerifyForm = (page: 'sign' | 'verify', account?: Account) =>
             signature: errors.signature?.message,
         },
         formSetSignature: (value: string) => setValue('signature', value),
+        formSetAopp: (result?: Record<string, string | undefined> | null) => {
+            setValue('aopp', !!result);
+            setValue('callback', result?.callback ?? '');
+            setValue('message', result?.message ?? '');
+        },
         messageRef,
         signatureRef,
         hexField: {

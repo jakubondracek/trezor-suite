@@ -1,7 +1,7 @@
 import TrezorConnect, { ButtonRequestMessage, UI, Unsuccessful, Success } from 'trezor-connect';
 import { SIGN_VERIFY } from './constants';
 import { addToast } from '@suite-actions/notificationActions';
-import { openModal } from '@suite-actions/modalActions';
+import { openModal, openDeferredModal } from '@suite-actions/modalActions';
 import type { Dispatch, GetState, TrezorDevice } from '@suite-types';
 import type { Account } from '@wallet-types';
 
@@ -184,3 +184,11 @@ export const verify =
             .then(throwWhenFailed)
             .then(onVerifySuccess(dispatch))
             .catch(onError(dispatch, 'verify-message-error'));
+
+// this is only a wrapper for `openDeferredModal` since it doesn't work with `bindActionCreators`
+// used in useCoinmarketBuyOffers
+export const openImportAoppModal = (symbol: Account['symbol']) => (dispatch: Dispatch) =>
+    dispatch(openDeferredModal({ type: 'import-aopp-message', symbol }));
+
+export const openSendAoppModal = (signature: string, callback: string) => (dispatch: Dispatch) =>
+    dispatch(openDeferredModal({ type: 'send-aopp-message', signature, callback }));

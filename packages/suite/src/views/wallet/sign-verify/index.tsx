@@ -4,7 +4,7 @@ import { Input, Button, Textarea, Card, Switch, variables } from '@trezor/compon
 import { WalletLayout, WalletLayoutHeader } from '@wallet-components';
 import { CharacterCount, Translation } from '@suite-components';
 import { useActions, useDevice, useSelector, useTranslation } from '@suite-hooks';
-import { sign as signAction, verify as verifyAction } from '@wallet-actions/signVerifyActions';
+import * as signVerifyActions from '@wallet-actions/signVerifyActions';
 import Navigation, { NavPages } from './components/Navigation';
 import SignAddressInput from './components/SignAddressInput';
 import { useCopySignedMessage } from '@wallet-hooks/sign-verify/useCopySignedMessage';
@@ -20,6 +20,9 @@ const Row = styled.div`
     justify-content: center;
     & + & {
         padding-top: 12px;
+    }
+    & > * + * {
+        margin-left: 10px;
     }
 `;
 
@@ -59,6 +62,7 @@ const SignVerify = () => {
         formValues,
         formErrors,
         formSetSignature,
+        formSetAopp,
         messageRef,
         signatureRef,
         hexField,
@@ -66,15 +70,17 @@ const SignVerify = () => {
         pathField,
     } = useSignVerifyForm(page, selectedAccount.account);
 
-    const { sign, verify } = useActions({
-        sign: signAction,
-        verify: verifyAction,
+    const { sign, verify, openImportModal, openSendModal } = useActions({
+        sign: signVerifyActions.sign,
+        verify: signVerifyActions.verify,
+        openImportModal: signVerifyActions.openImportAoppModal,
+        openSendModal: signVerifyActions.openSendAoppModal,
     });
 
     const onSubmit = async (data: SignVerifyFields) => {
-        const { address, path, message, signature, hex } = data;
+        const { address, path, message, signature, hex, aopp } = data;
         if (page === 'sign') {
-            const result = await sign(path, message, hex);
+            const result = await sign(path, message, hex, aopp);
             if (result?.signSignature) formSetSignature(result.signSignature);
         } else {
             await verify(address, message, signature, hex);
@@ -88,6 +94,20 @@ const SignVerify = () => {
     return (
         <WalletLayout title="TR_NAV_SIGN_VERIFY" account={selectedAccount}>
             <WalletLayoutHeader title="TR_NAV_SIGN_VERIFY">
+                {true && (
+                    /* TODO: This button available only for networks wit aopp feature */
+                    <Button
+                        type="button"
+                        data-test="@sign-verify/import-aopp"
+                        variant="tertiary"
+                        onClick={async () => {
+                            const r = await openImportModal('btc');
+                            formSetAopp(r);
+                        }}
+                    >
+                        Import aopp
+                    </Button>
+                )}
                 {page === 'sign' && canCopy && (
                     <Button type="button" variant="tertiary" onClick={copy}>
                         <Translation id="TR_COPY_TO_CLIPBOARD" />
@@ -183,6 +203,26 @@ const SignVerify = () => {
                         >
                             <Translation id={page === 'sign' ? 'TR_SIGN' : 'TR_VERIFY'} />
                         </StyledButton>
+                        {formValues.callback && (
+                            <StyledButton
+                                type="button"
+                                variant="secondary"
+                                data-test="@sign-verify/send-aopp"
+                                isDisabled={!formValues.signature}
+                                onClick={async () => {
+                                    const r = await openSendModal(
+                                        formValues.signature,
+                                        formValues.callback,
+                                    );
+                                    if (r) {
+                                        // finish
+                                    }
+                                    // formSetAopp(r);
+                                }}
+                            >
+                                Send aopp
+                            </StyledButton>
+                        )}
                     </Row>
                 </Form>
             </Card>
