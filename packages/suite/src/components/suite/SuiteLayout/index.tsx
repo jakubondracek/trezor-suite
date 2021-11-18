@@ -24,8 +24,8 @@ const PageWrapper = styled.div`
     overflow-x: hidden;
 `;
 
-const Body = styled.div<{ elsOpen?: boolean }>`
-    position: ${props => (props.elsOpen ? `unset` : `relative`)};
+const Body = styled.div<{ isGuideAboveModal?: boolean }>`
+    position: ${props => (props.isGuideAboveModal ? `unset` : `relative`)};
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -93,7 +93,9 @@ const StyledGuidePanel = styled(GuidePanel)<{ open?: boolean; isModalOpen?: bool
     width: ${variables.LAYOUT_SIZE.GUIDE_PANEL_WIDTH};
     flex: 0 0 ${variables.LAYOUT_SIZE.GUIDE_PANEL_WIDTH};
     z-index: ${props =>
-        props.isModalOpen ? variables.Z_INDEX.GUIDE_PANEL : variables.Z_INDEX.NAVIGATION_BAR - 1};
+        props.isModalOpen
+            ? variables.Z_INDEX.GUIDE_PANEL_BESIDE_MODAL
+            : variables.Z_INDEX.GUIDE_PANEL};
     border-left: 1px solid ${props => props.theme.STROKE_GREY};
     position: absolute;
     right: 0;
@@ -174,7 +176,7 @@ const BodyNormal = ({
     isMenuInline,
     isModalOpen,
 }: NormalBodyProps) => (
-    <Body elsOpen={isModalOpen && guideOpen}>
+    <Body isGuideAboveModal={isModalOpen && guideOpen}>
         <Columns guideOpen={guideOpen}>
             {!isMenuInline && menu && <MenuSecondary>{menu}</MenuSecondary>}
             <ScrollAppWrapper url={url}>

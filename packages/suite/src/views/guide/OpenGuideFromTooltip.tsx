@@ -3,6 +3,7 @@ import { Icon } from '@trezor/components';
 import { Translation } from '@suite-components';
 import { transparentize } from 'polished';
 import { useGuideOpenNode } from '@guide-hooks';
+import { useLayoutSize } from '@suite-hooks';
 import styled from 'styled-components';
 
 const OpenGuideLink = styled.a`
@@ -37,12 +38,13 @@ type OpenGuideFromTooltipProps = {
 
 const OpenGuideFromTooltip = ({ id, dataTest }: OpenGuideFromTooltipProps) => {
     const { openNodeById } = useGuideOpenNode();
+    const { isMobileLayout } = useLayoutSize();
     return (
         <OpenGuideLink
             data-test={dataTest}
             onClick={e => {
                 e.stopPropagation();
-                openNodeById(id);
+                if (isMobileLayout) openNodeById(id);
             }}
         >
             <StyledText>
