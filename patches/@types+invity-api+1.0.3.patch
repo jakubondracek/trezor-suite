@@ -1,0 +1,86 @@
+diff --git a/node_modules/@types/invity-api/index.d.ts b/node_modules/@types/invity-api/index.d.ts
+index 0c62fb2..eaf9c3f 100755
+--- a/node_modules/@types/invity-api/index.d.ts
++++ b/node_modules/@types/invity-api/index.d.ts
+@@ -157,6 +157,8 @@ export type ExchangeTradeStatus =
+     | 'SENDING' // send tx was created, waiting for send tx to be sent
+     | 'CONFIRMING' // send tx was sent, waiting for tx to be mined (not used for Trezor Wallet)
+     | 'CONVERTING' // send tx was mined, money is on exchange, receive tx not yet created
++    | 'APPROVAL_REQ' // it is necessary to perform APPROVAL transaction for DEX
++    | 'APPROVAL_PENDING' // waiting for DEX approval tx to be confirmed
+     | ExchangeTradeFinalStatus;
+ 
+ export type ExchangeFee =
+@@ -176,6 +178,7 @@ export interface ExchangeProviderInfo {
+     logo: string; // changenow-icon.jpg
+     isActive: boolean;
+     isFixedRate: boolean;
++    isDex: boolean;
+     buyTickers: string[];
+     sellTickers: string[];
+     addressFormats: StringMap; // specification of formats required by selected exchange
+@@ -198,13 +201,22 @@ export interface ExchangeCoinInfo {
+ 
+ export type ExchangeCoinListResponse = ExchangeCoinInfo[];
+ 
++export type DexApprovalType =
++    | 'MINIMAL' // MINIMAL (default) is the lowest necessary to swap sendStringAmount
++    | 'INFINITE' // approves infinite amount
++    | 'ZERO' // resets approval
++    | 'PRESET'; // PRESET takes value from approvalStringAmount
++
+ export interface ExchangeTrade {
+     send?: string; // BTC
++    sendAmount?: number; // 0.01 - DEPRECATED, used only for TREZOR
+     sendStringAmount?: string; // "0.01"
+     sendAddress?: string; // exchange address for send tx
+     receive?: string; // LTC
++    receiveAmount?: number; // 1 - DEPRECATED, used only for TREZOR
+     receiveStringAmount?: string; // "0.01"
+-    receiveAddress?: string; // users address for receive tx
++    fromAddress?: string; // user's address from which the tx is sent - used in DEX
++    receiveAddress?: string; // user's address for receive tx
+     rate?: number; // 100
+     min?: number; // 0.001
+     max?: ExchangeMaximum;
+@@ -215,7 +227,7 @@ export interface ExchangeTrade {
+     statusUrl?: string; // internal URL + ID assigned to the trade by the exchange to check status
+     status?: ExchangeTradeStatus; // state of trade after confirmTrade
+     error?: string; // something went wrong after confirmTrade
+-    receiveTxHash?: string; // hash of tx from exchange to user
++    receiveTxHash?: string; // hash of tx from exchange to user or DEX swap
+     cid?: string; // google clientID
+     offerReferenceId?: string; // coinswitch only
+     rateIdentificator?: string; // rate identificator for fixed rate exchanges
+@@ -225,6 +237,23 @@ export interface ExchangeTrade {
+     extraFieldDescription?: CoinExtraField;
+     tags?: ExchangeTradeTag[];
+     id?: string; // internal DB id
++    affil?: AffilData;
++    // DEX extra fields
++    isDex?: boolean;
++    approvalGasEstimate?: number; // gas estimate of the approval transaction
++    approvalType?: DexApprovalType;
++    preapprovedStringAmount?: string; //  amount that was already approved
++    approvalStringAmount?: string; //  amount to approve
++    approvalSendTxHash?: string; // txid of approval transaction
++    swapGasEstimate?: number; // gas estimate of the swap transaction
++    swapSlippage?: string; // swap slippage in percent, for example "1.5"
++    dexTx?: {
++        // tx data for approval or swap transaction
++        from: string;
++        to: string;
++        data: string;
++        value: string;
++    };
+     // locally used fields
+     offerType?: 'bestRate' | 'favorite';
+ }
+@@ -245,6 +274,7 @@ export interface ExchangeTradeQuoteRequest {
+     send: string; // BTC
+     receive: string; // LTC
+     sendStringAmount?: string; // "0.01"
++    dex?: 'enable' | 'exclusively'; // 'enable' means add dex offers, 'exclusively' means only dex offers
+ }
+ 
+ export type ExchangeTradeQuoteResponse = ExchangeTrade[];
