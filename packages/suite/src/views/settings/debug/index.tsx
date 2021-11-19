@@ -7,6 +7,7 @@ import * as suiteActions from '@suite-actions/suiteActions';
 import { useDevice, useSelector, useActions } from '@suite-hooks';
 import { openGithubIssue } from '@suite/services/github';
 import invityAPI from '@suite-services/invityAPI';
+import type { InvityServerEnvironment } from '@wallet-types/invity';
 import { isTranslationMode, setTranslationMode } from '@suite-utils/l10n';
 import { isWeb } from '@suite-utils/env';
 
@@ -23,22 +24,15 @@ const DebugSettings = () => {
         debug: state.suite.settings.debug,
         theme: state.suite.settings.theme,
     }));
-    const invityApiServerOptions = [
-        {
-            label: invityAPI.productionAPIServer,
-            value: invityAPI.productionAPIServer,
-        },
-        {
-            label: invityAPI.stagingAPIServer,
-            value: invityAPI.stagingAPIServer,
-        },
-        {
-            label: invityAPI.localhostAPIServer,
-            value: invityAPI.localhostAPIServer,
-        },
-    ];
+    const invityApiServerOptions = Object.entries(invityAPI.servers).map(
+        ([environment, server]) => ({
+            label: server.api,
+            value: environment as InvityServerEnvironment,
+        }),
+    );
+
     const selectedInvityApiServer =
-        invityApiServerOptions.find(s => s.value === debug.invityAPIUrl) ||
+        invityApiServerOptions.find(s => s.value === debug.invityServerEnvironment) ||
         invityApiServerOptions[0];
     const { device } = useDevice();
     return (
@@ -102,11 +96,11 @@ const DebugSettings = () => {
                     />
                     <StyledActionColumn>
                         <Select
-                            onChange={(item: { value: string; label: string }) => {
+                            onChange={(item: { value: InvityServerEnvironment; label: string }) => {
                                 setDebugMode({
-                                    invityAPIUrl: item.value,
+                                    invityServerEnvironment: item.value,
                                 });
-                                invityAPI.setInvityAPIServer(item.value);
+                                invityAPI.setInvityServersEnvironment(item.value);
                             }}
                             value={selectedInvityApiServer}
                             options={invityApiServerOptions}
