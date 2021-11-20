@@ -403,7 +403,7 @@ export const sortByCoin = [
     },
 ];
 
-export const getBip43Shortcut = [
+export const getBip43Type = [
     {
         description: 'bech32',
         path: "m/84'/0'/0'",
